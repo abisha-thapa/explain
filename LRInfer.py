@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import scipy
 from collections import Counter
+import matplotlib.pyplot as plt
 
 import torch
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -11,21 +12,27 @@ import torch.nn.functional as F
 from tqdm import tqdm
 import random
 import math
+import os
 import pickle as pk
 
+from sklearn.metrics import cohen_kappa_score
 import seaborn
 import scipy.sparse as sp
 from matplotlib import pyplot
 
 import dgl
 dgl.backend.set_default_backend(default_dir='pytorch', backend_name='pytorch')
-
 import dgl.function as fn
 from dgl import DGLGraph
 from dgl.nn.pytorch.conv import GraphConv
 from dgl.nn import GNNExplainer
 
 import networkx as nx
+
+from pgmpy.models import FactorGraph
+from pgmpy.factors.discrete import DiscreteFactor
+from pgmpy.inference import BeliefPropagation
+from statsmodels.stats.contingency_tables import mcnemar
 
 import Graph
 import GCN
@@ -100,14 +107,7 @@ for r in range(STARTRANK,ENDRANK,INCRANK):
             ofile.close()
     print("done "+str(r))
 
-import os
-import matplotlib.pyplot as plt
-from sklearn.metrics import cohen_kappa_score
-from pgmpy.models import FactorGraph
-from pgmpy.factors.discrete import DiscreteFactor
-from pgmpy.inference import BeliefPropagation
-import math
-import numpy as np
+
 
 idnames = os.listdir(RANKEXPDATA)
 LR = []
@@ -220,93 +220,6 @@ def getBPList(idx):
       ofile = open(outdir+idx,'w')
       for l in L:
           ofile.write(l[0]+","+str(l[1])+"\n")
-
-      '''
-      for k in Expln.keys():
-          Evid = k.split(":")
-          Vars = []
-          for e in Evid:
-              if e not in FG.get_variable_nodes():
-                  continue
-              Vars.append(e)
-          if len(Vars)>0:
-              Q1 = bp.query(variables=Vars)
-              if len(Vars)==1:
-                  ofile.write(Vars[0]+":"+str(Q1.values[0])+","+str(Q1.values[1])+"\n")
-              elif len(Vars)==2:
-                  ofile.write(Vars[0]+","+Vars[1]+":"+str(Q1.values[0][0])+
-                              ","+str(Q1.values[0][1])+","+str(Q1.values[1][0])+","+str(Q1.values[1][1])+"\n")
-
-      '''
-      '''
-      for k in Expln.keys():
-          Vars = [idx[:idx.find(".txt")]]
-          Evid = k.split(":")
-          Edict = {}
-          inVar = {}
-          for e in Evid:
-              if e not in FG.get_variable_nodes():
-                  continue
-              if e in Vars:
-                  inVar[e] = True
-                  continue
-              Edict[e]=0
-              #ofile.write(str(e)+":0,")
-          Q1 = bp.query(variables=Vars,evidence=Edict)
-          #ofile.write(str(Q1.values[0])+":"+str(Q1.values[1])+"\n")
-          for e in Evid:
-              if e not in FG.get_variable_nodes():
-                  continue
-              if e in Vars:
-                  continue
-              Edict[e]=1
-              #ofile.write(str(e)+":1,")
-          Q2 = bp.query(variables=Vars,evidence=Edict)
-          #ofile.write(str(Q2.values[0])+":"+str(Q2.values[1])+"\n")
-          #diff = abs(Q1.values[1]-Q2.values[1])
-          #sdict[k]=diff
-          allvars = []
-          for e in inVar.keys():
-              allvars.append(e)
-          for e in Edict:
-              allvars.append(e)
-          print(allvars)
-          #for v in Vars:
-          #    print(v+" ")
-          #print(Vars)
-          #print(Edict)
-          print(str(Q1.values)+ " "+str(Q2.values))
-      '''
-      '''
-      Vars = []
-      for k in Expln.keys():
-          var = k.split(":")
-          for v in var:
-                  if v not in Vars:
-                      Vars.append(v)
-
-      if len(Vars)>0:
-          for v in Vars:
-              if v not in FG.get_variable_nodes():
-                  continue
-              Edict = {}
-              Edict[v]=0
-              Vars1 = []
-              for v1 in Vars:
-                  if v==v1:
-                      continue
-                  if v1 not in FG.get_variable_nodes():
-                      continue
-
-                  Vars1.append(v1)
-              Q = bp.query(variables=Vars1,evidence=Edict)
-              print(Vars1)
-              print(Edict)
-              print(Q.values)
-
-      '''
-      #L = sorted(sdict.items(), key=lambda item: item[1],reverse=True)
-      #return L
       ofile.close()
 
 
@@ -314,12 +227,6 @@ for idx in idnames:
     getBPList(idx)
 
 model,origpreds = train(GCN, G)
-
-import os
-import matplotlib.pyplot as plt
-from sklearn.metrics import cohen_kappa_score
-from statsmodels.stats.contingency_tables import mcnemar
-
 
 def getIMPList(idx,orig=False):
   datadir = GRDATA
