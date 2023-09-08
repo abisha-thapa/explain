@@ -21,10 +21,12 @@ def main():
     parser.add_argument("-inc_rank", type=int, default=50, help="Increment value for the low rank approximation")
     parser.add_argument("-exp_limit_nodes", type=int, default=1, help="Limiting value for number of explanation nodes")
     parser.add_argument("-num_classes", type=int, default=5, help="Number of classes for the dataset")
-    parser.add_argument("-dataset_name", type=str, default="BA-SHAPES", help="Name of the dataset")
-
+    parser.add_argument("-dataset_name", type=str, default="bashapes", choices=["bashapes", "bacommunity", "treecycle", "treegrid"],
+                         help="Name of the dataset")
 
     opt = parser.parse_args()
+
+
 
 
 
