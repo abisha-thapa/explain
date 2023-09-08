@@ -36,34 +36,11 @@ from statsmodels.stats.contingency_tables import mcnemar
 
 import Graph
 import GCN
-
-gnn = 'GCN'
-gnn_explainer = "GNN-Explainer"
-
-featurefile = "feat.txt"
-adjfile = "A.txt"
-labelfile = "label.txt"
-trainmaskfile = "train_mask.txt"
-validmaskfile = "val_mask.txt"
-testmaskfile = "test_mask.txt"
+import train
 
 train_mask = None
 valid_mask = None
 test_mask = None
-
-GRDATA = "grexpTexas/"
-BMFDATA = "BMFTexas/"
-BPDATA = "BPProbsTexas/"
-RANKEXPDATA = "rankexpTexas/"
-
-dataset_name = 'texas'
-
-#PARAMETERS
-STARTRANK = 140
-ENDRANK = 181
-INCRANK = 10
-EXPLIMITNODES = 1
-CLASSVALS = [0,1,2,3,4]
 
 
 

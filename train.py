@@ -25,12 +25,9 @@ def train(model_object, G, hidden_dim, num_classes, graph_num=''):
             logits = model(G, G.ndata['feat'])
             pred = logits.argmax(dim=1)
             acc = (pred[G.ndata['val_mask']] == G.ndata['label'][G.ndata['val_mask']]).float().mean()
-        '''
+
         if epoch%100 == 0:
-            print_i = f"Epoch: {epoch}, Loss: {loss.item()}, Val Acc: {acc.item()}\n"
-            print_info += print_i
-            print(print_i)
-        '''
+            print(f"Epoch: {epoch}, Loss: {loss.item()}, Val Acc: {acc.item()}\n")
 
     # Evaluate accuracy on test set
     model.eval()
@@ -39,7 +36,6 @@ def train(model_object, G, hidden_dim, num_classes, graph_num=''):
         pred = logits.argmax(dim=1)
         test_acc = (pred[G.ndata['test_mask']] == G.ndata['label'][G.ndata['test_mask']]).float().mean()
 
-    print_i = f" Test Acc: {test_acc.item()}"
-    print(print_i)
+    print(f" Test Acc: {test_acc.item()}")
 
-    return model,pred
+    return model, pred

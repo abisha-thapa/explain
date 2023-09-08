@@ -1,17 +1,28 @@
 import argparse
 
+featurefile = "feat.txt"
+adjfile = "A.txt"
+labelfile = "label.txt"
+trainmaskfile = "train_mask.txt"
+validmaskfile = "val_mask.txt"
+testmaskfile = "test_mask.txt"
+
+GRDATA = "grexp/"
+BMFDATA = "BMF/"
+BPDATA = "BPProbs/"
+RANKEXPDATA = "rankexp/"
+
+
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-num_nodes", type=int, default=500, help="Number of nodes to take in training")
-    parser.add_argument("-num_clusters", type=int, default=50, help="Number of weight-sharing clusters to form")
-    parser.add_argument("-num_iters", type=int, default=30, help="Number of iterations to train the HMLN")
-    parser.add_argument("-dataset", type=str, default="cora", choices=["cora", "citeseer", "pubmed"],
-                        help="Choose the dataset name")
-    parser.add_argument("-spec_model", type=str, default="gcn", choices=["gcn", "gs", "gat"],
-                        help="Select the specification DNN.")
-    parser.add_argument("-nuv_model", type=str, default="gat", choices=["gcn", "gs", "gat"],
-                        help="Select the NUV DNN.")
+    parser.add_argument("-start_rank", type=int, default=300, help="Starting value of the low rank approximation")
+    parser.add_argument("-end_rank", type=int, default=500, help="Ending value of the low rank approximation")
+    parser.add_argument("-inc_rank", type=int, default=50, help="Increment value for the low rank approximation")
+    parser.add_argument("-exp_limit_nodes", type=int, default=1, help="Limiting value for number of explanation nodes")
+    parser.add_argument("-num_classes", type=int, default=5, help="Number of classes for the dataset")
+    parser.add_argument("-dataset_name", type=str, default="BA-SHAPES", help="Name of the dataset")
+
 
     opt = parser.parse_args()
 
