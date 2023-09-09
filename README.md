@@ -26,7 +26,7 @@ python genLRApprox.py -dataset_name bashapes -start_rank 100 -end_rank 1000 -inc
 ```
 python main.py -dataset_name bashapes -num_classes 5 -start_rank 100 -end_rank 1000 -inc_rank 100 -exp_limit_nodes 1
 ```
-#### Configurable parameters for genLRApprox.py
+#### Configurable parameters for main.py
 - dataset_name - Name of the dataset to use
 - num_classes - Number of class labels in the dataset
 - start_rank - Starting value of the low rank approximation
