@@ -1,17 +1,10 @@
 import argparse
 
-featurefile = "feat.txt"
-adjfile = "A.txt"
-labelfile = "label.txt"
-trainmaskfile = "train_mask.txt"
-validmaskfile = "val_mask.txt"
-testmaskfile = "test_mask.txt"
+import pandas as pd
+import torch
 
-GRDATA = "grexp/"
-BMFDATA = "BMF/"
-BPDATA = "BPProbs/"
-RANKEXPDATA = "rankexp/"
-
+from src.explanation import *
+from src.LRInfer import *
 
 def main():
     parser = argparse.ArgumentParser()
@@ -26,8 +19,35 @@ def main():
 
     opt = parser.parse_args()
 
+    feat = torch.tensor(pd.read_csv(f"{opt.dataset_name}/{featurefile}", header=None, sep='\t').to_numpy().astype(np.float32))
+    label = torch.tensor(pd.read_csv(f"{opt.dataset_name}/{labelfile}", header=None, sep='\t').to_numpy().flatten().astype(int))
+    _A = pd.read_csv(f"{opt.dataset_name}/{adjfile}", header=None, sep='\t').to_numpy()
 
+    train_mask = None
+    valid_mask = None
+    test_mask = None
 
+    if trainmaskfile:
+        train_mask = torch.tensor(
+            pd.read_csv(f"{opt.dataset_name}/{trainmaskfile}", header=None, sep='\t').to_numpy()[:, 0].flatten().astype(bool))
+    if validmaskfile:
+        valid_mask = torch.tensor(
+            pd.read_csv(f"{opt.dataset_name}/{validmaskfile}", header=None, sep='\t').to_numpy()[:, 0].flatten().astype(bool))
+    if testmaskfile:
+        test_mask = torch.tensor(
+            pd.read_csv(f"{opt.dataset_name}/{testmaskfile}", header=None, sep='\t').to_numpy()[:, 0].flatten().astype(bool))
+
+    org_graph = Graph(opt.dataset_name, feat, label, _A, train_mask, valid_mask, test_mask)
+    G = org_graph.generate()
+    print(f"Original Graph: {G}")
+
+    print(f"Generating explanations for original graph G ... ")
+    generate_grexpdata(G, arg=opt)
+    print(f"Generating explanations for low ranked graph G' ... ")
+    print(f"Starting rank: {opt.start_rank} Stop rank at: {opt.end_rank} Increase rank by: {opt.inc_rank}")
+    generate_rankexpdata(G, arg=opt)
+    belief_propagation(arg = opt)
+    get_results(G, arg=opt)
 
 
 if __name__ == "__main__":

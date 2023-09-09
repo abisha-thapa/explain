@@ -1,0 +1,11 @@
+featurefile = "feat.txt"
+adjfile = "A.txt"
+labelfile = "label.txt"
+trainmaskfile = "train_mask.txt"
+validmaskfile = "val_mask.txt"
+testmaskfile = "test_mask.txt"
+
+GRDATA = "grexp/"
+BMFDATA = "BMF/"
+BPDATA = "BPProbs/"
+RANKEXPDATA = "rankexp/"
